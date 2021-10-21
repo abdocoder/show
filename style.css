@@ -27,12 +27,12 @@
 }
 .ifra{
     background: chocolate;
-    height: 700px;
+    height: 600px;
     align-items: center;
 }
 .ifra iframe{
     width: 100%;
-     height: 700px;
+     height: 600px;
 }
 .btn a{
     position: relative;
