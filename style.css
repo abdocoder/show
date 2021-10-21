@@ -29,6 +29,7 @@
     background: chocolate;
     height: 600px;
     align-items: center;
+     margin-bottom: 30px;
 }
 .ifra iframe{
     width: 100%;
