@@ -317,6 +317,10 @@
 		.st-header-title h2 span{
 			font-size: 30px;
 		}
+		.st-header-title h2{
+			font-size: 30px;
+			margin-bottom: 20px;
+		}
 		
 	
 		
