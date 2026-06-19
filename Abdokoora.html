@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abdo Sports</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <title>ABDO STAH Sports Viewer </title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #020617;
+            background-color: #0f172a;
             color: #f8fafc;
             margin: 0;
             padding: 20px;
@@ -19,7 +18,6 @@
         h1 {
             color: #38bdf8;
             margin-bottom: 20px;
-            font-size: 1.5rem;
         }
         .player-container {
             width: 100%;
@@ -28,19 +26,19 @@
             background-color: #000;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
-            border: 1px solid #1e293b;
+            position: relative;
         }
-        video {
+        iframe {
             width: 100%;
             height: 100%;
-            outline: none;
+            border: none;
         }
         .channel-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
             width: 100%;
             max-width: 900px;
         }
@@ -48,10 +46,9 @@
             background-color: #1e293b;
             color: #e2e8f0;
             border: 1px solid #334155;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 0.85rem;
             font-weight: 600;
             transition: all 0.2s;
             text-align: center;
@@ -67,113 +64,77 @@
             border-color: #0ea5e9;
         }
         .status-bar {
-            margin-top: 15px;
-            font-size: 0.8rem;
-            color: #64748b;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #94a3b8;
             text-align: center;
         }
-        .info-box {
-            background: #1e293b;
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.85rem;
-            border-left: 4px solid #0ea5e9;
+        .warning {
+            color: #fbbf24;
+            font-size: 0.8rem;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
 
-    <h1> Abdo stah Sports Zone Pro</h1>
+    <h1>Sports Zone ABDO STAH </h1>
 
-    <div class="info-box">
-        <strong>ABDO STAH:</strong> Tfaraj easy. No ads No stop.
-    </div>
-
-    <div class="player-container">
-        <video id="video" controls autoplay></video>
+    <div class="player-container" id="player">
+        <div style="display: flex; height: 100%; align-items: center; justify-content: center; color: #64748b; text-align: center; padding: 20px;">
+            Select a channel to start watching.<br>
+            Note: beIN streams are updated frequently.
+        </div>
     </div>
 
     <div class="channel-list">
+        <!-- beIN Channels with multiple fallback options -->
         
-        <!-- Frame fallbacks for other sources -->
-        <button class="channel-btn" onclick="playFrame('https://soccerball.st/rampages/unoair1/', this)">Live 1</button>
-        <button class="channel-btn" onclick="playFrame('https://statusnode.is/nodejs/?t=1', this)">Live 2</button>
-        <button class="channel-btn" onclick="playFrame('https://18.livekoora.blog/albaplayer/live1/', this)">Live 3 (AR)</button>
-        <button class="channel-btn" onclick="playFrame('https://tops.poiy.online/albaplayer/max1/', this)">Live 4</button>
-        <button class="channel-btn" onclick="playFrame('https://up.fawa.news/?p=351', this)">Live 5</button>
-    
+        <!-- Live Channels -->
+        <button class="channel-btn" onclick="loadChannel('https://soccerball.st/rampages/unoair1/', this)">Live 1</button>
+        <button class="channel-btn" onclick="loadChannel('https://statusnode.is/nodejs/?t=1', this)">Live 2</button>
+        <button class="channel-btn" onclick="loadChannel('https://18.livekoora.blog/albaplayer/live1/', this)">Live 3 (AR)</button>
+        <button class="channel-btn" onclick="loadChannel('https://tops.poiy.online/albaplayer/max1/', this)">Live 4</button>
+        <button class="channel-btn" onclick="loadChannel('https://up.fawa.news/?p=351', this)">Live 5</button>
 
         
-        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/max2.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">beIN MAX 2</button>
-        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/alwan1.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">ALW 1</button>
-        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/max22.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">beIN MAX 2 4K</button>
-        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/bbc2.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">BBC Two</button>
-        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/b1fr.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">Bein Sport 1 FR</button>
+        <button class="channel-btn" onclick="loadChannel('https://vsys.kora-top.mov/frame.php?ch=max2', this)">beIN MAX 2 (vsys)</button>
+        <button class="channel-btn" onclick="loadChannel('https://ar.kora-top.mov/frame.php?ch=max2', this)">beIN MAX 2 (ar)</button>
+        <button class="channel-btn" onclick="loadChannel('https://yalla.kora-top.mov/frame.php?ch=max2', this)">beIN MAX 2 (yalla)</button>
+        
+        <button class="channel-btn" onclick="loadChannel('https://vsys.kora-top.mov/frame.php?ch=alwan1', this)">ALW 1</button>
+        <button class="channel-btn" onclick="loadChannel('https://vsys.kora-top.mov/frame.php?ch=max22', this)">beIN MAX 2 4K</button>
+        <button class="channel-btn" onclick="loadChannel('https://vsys.kora-top.mov/frame.php?ch=bbc2', this)">BBC Two</button>
+        <button class="channel-btn" onclick="loadChannel('https://vsys.kora-top.mov/frame.php?ch=b1fr', this)">Bein Sport 1 FR</button>
+        
     </div>
 
-    <div class="status-bar" id="status">Select a channel to begin.</div>
+    <div class="status-bar" id="status">Ready</div>
+    <div class="warning">Ad-blocking sandbox enabled. If a player doesn't load, try another source.</div>
 
     <script>
-        const video = document.getElementById('video');
-        const status = document.getElementById('status');
-        let hls = null;
-
-        function playM3U8(url, btn) {
-            updateUI(btn);
+        function loadChannel(url, btn) {
+            const player = document.getElementById('player');
+            const status = document.getElementById('status');
             
-            // Clear existing HLS instance
-            if (hls) {
-                hls.destroy();
-            }
-
-            if (Hls.isSupported()) {
-                hls = new Hls();
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play();
-                    status.innerText = "Playing Direct Stream: " + btn.innerText;
-                });
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        status.innerText = "Error: Link expired. Please refresh the source.";
-                    }
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // For Safari
-                video.src = url;
-                video.addEventListener('loadedmetadata', function() {
-                    video.play();
-                });
-            }
-        }
-
-        function playFrame(url, btn) {
-            updateUI(btn);
-            if (hls) hls.destroy();
-            video.pause();
-            video.style.display = 'none';
-            
-            let container = document.querySelector('.player-container');
-            container.innerHTML = `<iframe src="${url}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`;
-            status.innerText = "Playing Frame: " + btn.innerText;
-        }
-
-        function updateUI(btn) {
+            // Update active button
             document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            // Reset video visibility if it was hidden by playFrame
-            const container = document.querySelector('.player-container');
-            if (!container.querySelector('video')) {
-                container.innerHTML = `<video id="video" controls autoplay style="width:100%;height:100%;"></video>`;
-                // Re-assign video variable
-                window.video = document.getElementById('video');
-            } else {
-                window.video.style.display = 'block';
-            }
+            // Load iframe with SANDBOX to block popups and ads
+            // We allow-scripts and allow-same-origin for the player to function
+            // We EXCLUDE allow-popups and allow-modals to block ads
+            player.innerHTML = `<iframe 
+                src="${url}" 
+                allowfullscreen 
+                allow="autoplay; encrypted-media"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+            ></iframe>`;
+            
+            status.innerText = `Current Channel: ${btn.innerText}`;
+            
+            console.log('Loading channel:', url);
         }
     </script>
 </body>
-      </html>
+</html>
