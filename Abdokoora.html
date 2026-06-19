@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Sports Viewer (Ad-Free)</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #38bdf8;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        .player-container {
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            border: 1px solid #1e293b;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+        .channel-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .channel-btn {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .channel-btn:hover {
+            background-color: #334155;
+            border-color: #38bdf8;
+            color: #38bdf8;
+        }
+        .channel-btn.active {
+            background-color: #0ea5e9;
+            color: white;
+            border-color: #0ea5e9;
+        }
+        .status-bar {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #64748b;
+            text-align: center;
+        }
+        .info-box {
+            background: #1e293b;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            border-left: 4px solid #0ea5e9;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Sports Zone Viewer Pro</h1>
+
+    <div class="info-box">
+        <strong>Anti-Ad Protection:</strong> This version uses direct stream playback. No ads can pop up.
+    </div>
+
+    <div class="player-container">
+        <video id="video" controls autoplay></video>
+    </div>
+
+    <div class="channel-list">
+        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/max2.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">beIN MAX 2</button>
+        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/alwan1.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">ALW 1</button>
+        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/max22.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">beIN MAX 2 4K</button>
+        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/bbc2.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">BBC Two</button>
+        <button class="channel-btn" onclick="playM3U8('https://a1.kora-plus.mov/watch/b1fr.m3u8?token=Q1w715YKjP0UULFwW1fEuQ&expires=1781839522', this)">Bein Sport 1 FR</button>
+        
+        <!-- Frame fallbacks for other sources -->
+        <button class="channel-btn" onclick="playFrame('https://soccerball.st/rampages/unoair1/', this)">Live 1</button>
+        <button class="channel-btn" onclick="playFrame('https://statusnode.is/nodejs/?t=1', this)">Live 2</button>
+        <button class="channel-btn" onclick="playFrame('https://18.livekoora.blog/albaplayer/live1/', this)">Live 3 (AR)</button>
+        <button class="channel-btn" onclick="playFrame('https://tops.poiy.online/albaplayer/max1/', this)">Live 4</button>
+        <button class="channel-btn" onclick="playFrame('https://up.fawa.news/?p=351', this)">Live 5</button>
+    </div>
+
+    <div class="status-bar" id="status">Select a channel to begin.</div>
+
+    <script>
+        const video = document.getElementById('video');
+        const status = document.getElementById('status');
+        let hls = null;
+
+        function playM3U8(url, btn) {
+            updateUI(btn);
+            
+            // Clear existing HLS instance
+            if (hls) {
+                hls.destroy();
+            }
+
+            if (Hls.isSupported()) {
+                hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                    status.innerText = "Playing Direct Stream: " + btn.innerText;
+                });
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        status.innerText = "Error: Link expired. Please refresh the source.";
+                    }
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // For Safari
+                video.src = url;
+                video.addEventListener('loadedmetadata', function() {
+                    video.play();
+                });
+            }
+        }
+
+        function playFrame(url, btn) {
+            updateUI(btn);
+            if (hls) hls.destroy();
+            video.pause();
+            video.style.display = 'none';
+            
+            let container = document.querySelector('.player-container');
+            container.innerHTML = `<iframe src="${url}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>`;
+            status.innerText = "Playing Frame: " + btn.innerText;
+        }
+
+        function updateUI(btn) {
+            document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Reset video visibility if it was hidden by playFrame
+            const container = document.querySelector('.player-container');
+            if (!container.querySelector('video')) {
+                container.innerHTML = `<video id="video" controls autoplay style="width:100%;height:100%;"></video>`;
+                // Re-assign video variable
+                window.video = document.getElementById('video');
+            } else {
+                window.video.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+      </html>
